@@ -66,7 +66,7 @@ def install_jupyter_notebook():
 
 @when('config.changed')
 def config_changed():
-    clear_flag('jupyter-notebook.init.config.available')
+    init_configure_jupyter_notebook()
 
 
 @when('notebook.installed',
@@ -138,6 +138,7 @@ def set_conda_relation_data():
 
     endpoint.configure(**ctxt)
     set_flag('conda.relation.data.available')
+    clear_flag('conda.available')
 
 
 @when('http.available',
@@ -146,6 +147,7 @@ def configure_http():
     conf = hookenv.config()
     endpoint = endpoint_from_flag('http.available')
     endpoint.configure(port=conf.get('jupyter-web-port'))
+    clear_flag('http.available')
 
 
 def restart_notebook():
