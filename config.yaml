@@ -19,6 +19,14 @@ options:
     default: "7e6785caad25e33930bc03fac4994a434a21bc8401817b7efa28f53619fa9c29"
     description: |
       SHA checksum for installer
+  conda-http-proxy:
+    type: string
+    description: |
+      http_proxy setting for downloading from conda
+  conda-https-proxy:
+    type: string
+    description: |
+      https_proxy setting for downloading from conda
   jupyter-base-url:
     description: |
       Base URL of the notebook, if reverse-proxied.

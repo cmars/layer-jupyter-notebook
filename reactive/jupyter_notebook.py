@@ -35,6 +35,13 @@ def install_jupyter_notebook():
 
     conf = hookenv.config()
 
+    if conf.get('conda-http-proxy'):
+        os.putenv('http-proxy', conf['conda-http-proxy'])
+        os.environ['http-proxy'] = conf['conda-http-proxy']
+    if conf.get('conda-https-proxy'):
+        os.putenv('https-proxy', conf['conda-https-proxy'])
+        os.environ['https-proxy'] = conf['conda-https-proxy']
+
     # Download and install conda
     init_install_conda(
         conf.get('conda-installer-url'),
