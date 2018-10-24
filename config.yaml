@@ -1,35 +1,20 @@
 options:
-  conda-extra-packages:
+  extra-pip-packages:
     type: string
     default: ""
     description: |
-      Space separated list of extra packages to `conda install`
-  conda-extra-pip-packages:
-    type: string
-    default: ""
-    description: |
-      Space separated list of extra packages to `pip install` into the conda env
-  conda-installer-url:
-    type: string
-    default: "https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh"
-    description: |
-      URL to install conda from
-  conda-installer-sha256:
-    type: string
-    default: "7e6785caad25e33930bc03fac4994a434a21bc8401817b7efa28f53619fa9c29"
-    description: |
-      SHA checksum for installer
-  conda-http-proxy:
+      Space separated list of extra packages to `pip install`
+  http-proxy:
     type: string
     description: |
-      http_proxy setting for downloading from conda
-  conda-https-proxy:
+      http_proxy setting for installing from PyPI
+  https-proxy:
     type: string
     description: |
-      https_proxy setting for downloading from conda
+      https_proxy setting for installing from PyPI
   jupyter-base-url:
     description: |
-      Base URL of the notebook, if reverse-proxied.
+      Base URL of the notebook, if reverse-proxied
     type: string
   jupyter-web-password:
     description: |
@@ -38,6 +23,6 @@ options:
     default: ""
   jupyter-web-port:
     description: |
-      TCP web port for Jupyter notebook.
+      TCP web port for Jupyter notebook
     type: int
     default: 9999

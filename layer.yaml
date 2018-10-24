@@ -1,9 +1,7 @@
 includes:
   - 'layer:basic'
-  - 'layer:conda-api'
   - 'interface:http'
-  - 'interface:conda'
 options:
   basic:
     use_venv: false
-repo: "https://github.com/omnivector-solutions/layer-jupyter-notebook"
+repo: "https://github.com/cmars/layer-jupyter-notebook"

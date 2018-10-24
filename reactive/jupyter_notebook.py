@@ -5,20 +5,14 @@ from charmhelpers.core import hookenv, host, templating, unitdata
 from charmhelpers.core.host import chownr
 from charms.reactive import endpoint_from_flag, when, when_not, set_flag, clear_flag
 
-from charms.layer.conda_api import (
-    CONDA_HOME,
-    create_conda_venv,
-    init_install_conda,
-    install_conda_packages,
-    install_conda_pip_packages,
-)
-
 JUPYTER_DIR = '/opt/jupyter'
+PIP_PACKAGES = ['jupyter', 'matplotlib', 'numpy', 'pandas',
+                'scipy', 'scikit-learn', 'requests']
 
 
 @when_not('notebook.installed')
 def install_notebook_dep():
-    subprocess.call(['pip3', 'install', 'notebook'])
+    subprocess.call(['pip3', 'install', '--upgrade', 'notebook'])
     set_flag('notebook.installed')
 
 
@@ -31,47 +25,26 @@ def create_jupyter_config_dir():
 
 @when_not('jupyter-notebook.installed')
 def install_jupyter_notebook():
-    hookenv.log("Install Jupyter-notebook")
+    hookenv.log("Installing Jupyter-notebook and pip packages")
 
     conf = hookenv.config()
 
-    if conf.get('conda-http-proxy'):
-        os.putenv('http-proxy', conf['conda-http-proxy'])
-        os.environ['http-proxy'] = conf['conda-http-proxy']
-    if conf.get('conda-https-proxy'):
-        os.putenv('https-proxy', conf['conda-https-proxy'])
-        os.environ['https-proxy'] = conf['conda-https-proxy']
+    if conf.get('http-proxy'):
+        os.putenv('http_proxy', conf['http-proxy'])
+        os.environ['http_proxy'] = conf['http-proxy']
+    if conf.get('https-proxy'):
+        os.putenv('https_proxy', conf['https-proxy'])
+        os.environ['https_proxy'] = conf['https-proxy']
 
-    # Download and install conda
-    init_install_conda(
-        conf.get('conda-installer-url'),
-        conf.get('conda-installer-sha256'),
-        validate="sha256"
-    )
-
-    # Create virtualenv and install jupyter
-    create_conda_venv(python_version="3.5", packages=['jupyter', 'nb_conda'])
-
-    # Install any extra conda packages
-    if conf.get('conda-extra-packages'):
-        install_conda_packages(conf.get('conda-extra-packages').split())
-
-    # Pip install findspark
-    install_conda_pip_packages(['findspark'])
-
-    # Install any extra conda pip packages
-    if conf.get('conda-extra-pip-packages'):
-        install_conda_pip_packages(
-            conf.get('conda-extra-pip-packages').split())
-
-    # Chown the perms to ubuntu
-    chownr(str(CONDA_HOME), 'ubuntu', 'ubuntu', chowntopdir=True)
+    extra_pip_packages = conf.get('extra-pip-packages').split()
+    subprocess.call(['pip3', 'install', '--upgrade'] +
+        PIP_PACKAGES + extra_pip_packages)
 
     # Set installed flag
     set_flag('jupyter-notebook.installed')
 
 
-@when('config.changed')
+@when('config.changed', 'notebook.installed', 'jupyter-notebook.installed')
 def config_changed():
     init_configure_jupyter_notebook()
 
@@ -187,7 +160,7 @@ def render_jupyter_systemd_template(ctxt=None):
     if not ctxt:
         ctxt = {}
 
-    ctxt['jupyter_bin'] = str(CONDA_HOME / 'envs' / 'juju' / 'bin' / 'jupyter')
+    ctxt['jupyter_bin'] = '/usr/local/bin/jupyter'
 
     templating.render(
         source='jupyter-notebook.service.j2',
