@@ -98,29 +98,6 @@ def jupyter_init_available():
         hookenv.status_set('blocked', "Jupyter could not start - Please DEBUG")
 
 
-@when('conda.available')
-@when_not('conda.relation.data.available')
-def set_conda_relation_data():
-    """Set conda endpoint relation data
-    """
-    conf = hookenv.config()
-    endpoint = endpoint_from_flag('conda.available')
-
-    ctxt = {'url': conf.get('conda-installer-url'),
-            'sha': conf.get('conda-installer-sha256')}
-
-    if conf.get('conda-extra-packages'):
-        ctxt['conda_extra_packages'] = conf.get('conda-extra-packages')
-
-    if conf.get('conda-extra-pip-packages'):
-        ctxt['conda_extra_pip_packages'] = \
-            conf.get('conda-extra-pip-packages')
-
-    endpoint.configure(**ctxt)
-    set_flag('conda.relation.data.available')
-    clear_flag('conda.available')
-
-
 @when('http.available',
       'jupyter-notebook.init.available')
 def configure_http():
